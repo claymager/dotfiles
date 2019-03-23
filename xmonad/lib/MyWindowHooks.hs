@@ -112,10 +112,10 @@ full = 1 + (2 * border)
 
 floatRight = customFloating $ W.RationalRect x y w h
   where
-    x = (1 - w) + border -- distance from left
-    y = (1 - h) / 2      -- distance from top
-    w = 0.3              -- width of window
-    h = 0.66             -- height of window
+    x = (1-w) + border -- distance from left
+    y = (1-h)/2        -- distance from top
+    w = 0.6            -- width of window
+    h = 0.8
 
 floatCenter = customFloating $ W.RationalRect x y w h
   where
@@ -148,7 +148,7 @@ spawnDiscord = "Discord &> /dev/null"
 findDiscord = className =? "discord"
 floatDiscord = customFloating $ W.RationalRect x y w h
   where
-    h = 0.5
+    h = 0.8
     w = 0.3
     y = (1 - h) / 2
     x = -border
