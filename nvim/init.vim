@@ -15,10 +15,10 @@ nnoremap - 10<C-W>>|xnoremap <C-W>> 10<C-W>>|
 
 set termguicolors
 colorscheme dracula
+set path+=**
 
 set number            "Number lines
 set title
-set clipboard+=unnamedplus
 
 set tabstop=2         "A tab is 2 spaces
 set softtabstop=2     "Insert 2 spaces when tab is pressed
