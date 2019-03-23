@@ -65,6 +65,7 @@ myManageHook = composeOne
 myScratchpads = [ NS "spotify"  spawnSpotify  findSpotify  manageSpotify
                 , NS "terminal" spawnTerm findTerm manageTerm
                 , NS "gcal" spawnGcal findGcal manageGcal
+                , NS "gmail" spawnGmail findGmail manageGmail
                 , NS "notes" spawnNotes findNotes manageNotes
                 ]
   where
@@ -77,7 +78,7 @@ myScratchpads = [ NS "spotify"  spawnSpotify  findSpotify  manageSpotify
         w = 0.2
         y = (1-h)/2
         x = (1-h)/2
-    spawnNotes = myTerminal ++ " --name notes -e nvim ~/notes.txt"
+    spawnNotes = myTerminal ++ " --name notes -e nvim ~/.messages"
     findNotes  = resource =? "notes"
     manageNotes = customFloating $ W.RationalRect x y w h
       where
@@ -95,12 +96,19 @@ myScratchpads = [ NS "spotify"  spawnSpotify  findSpotify  manageSpotify
         x = (1-w)/2 -- distance from left
     spawnGcal = "google-chrome-stable --kiosk calendar.google.com";
     findGcal = resource =? "google-chrome";
-    manageGcal = customFloating $ W.RationalRect x y w h
+    manageGcal = customFloating leftThird
+
+    spawnGmail = "google-chrome-stable --kiosk mail.google.com";
+    findGmail = resource =? "google-chrome";
+    manageGmail = customFloating leftThird
+
+    leftThird = W.RationalRect x y w h
       where
         h = 1.01
         w = 0.4
         y = hidden_border
         x = (1-w) - hidden_border
+
 
 ------------------------------------------------------------------------
 -- Layouts
@@ -185,6 +193,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   -- Start a terminal.  Terminal to start is specified by myTerminal variable.
   [ ((modMask, xK_t),                 spawn $ XMonad.terminal conf)
   , ((modMask, xK_c),                 namedScratchpadAction myScratchpads "gcal")
+  , ((modMask .|. shiftMask, xK_c),   namedScratchpadAction myScratchpads "gmail")
   , ((modMask, xK_f),                 spawn "qutebrowser")
   , ((modMask, xK_s),                 namedScratchpadAction myScratchpads "terminal")
   {-, ((modMask, xK_d),                 namedScratchpadAction myScratchpads "discord")-}
