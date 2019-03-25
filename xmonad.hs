@@ -50,17 +50,19 @@ myTerminal = "kitty"
 -- To find the property name associated with a program, use
 -- > xprop | grep WM_CLASS
 -- and click on the client you're interested in.
---
--- To match on the WM_NAME, you can use 'title' in the same way that
--- 'className' and 'resource' are used below.
+-- 
+-- title =? WM_NAME
+-- className =? WM_CLASS
+-- resource =? WM_CLASS
 --
 myManageHook = composeOne
   [ isFullscreen -?> (doF W.focusDown <+> doFullFloat)
   , className =? "Gimp"           -?> doFloat
+  , title =? "Plover"         -?> doFloat
   , isDialog                      -?> doFloat
---  , resource =? "desktop_window" -?> doIgnore
   , return True -?> doF W.swapDown
   ] <+> namedScratchpadManageHook myScratchpads
+
 
 myScratchpads = [ NS "spotify"  spawnSpotify  findSpotify  manageSpotify
                 , NS "terminal" spawnTerm findTerm manageTerm
@@ -71,9 +73,9 @@ myScratchpads = [ NS "spotify"  spawnSpotify  findSpotify  manageSpotify
   where
     hidden_border = -0.002
     spawnSpotify = "spotify"
-    findSpotify = resource =? "Spotify" -- does not work
+    findSpotify = className =? "Spotify"
     manageSpotify = customFloating $ W.RationalRect x y w h
-      where
+      where -- Irrelevant. Spotify doesn't set className until XMonad has already drawn it.
         h = 0.3
         w = 0.2
         y = (1-h)/2
@@ -90,10 +92,10 @@ myScratchpads = [ NS "spotify"  spawnSpotify  findSpotify  manageSpotify
     findTerm  = resource =? "scratchpad"
     manageTerm = customFloating $ W.RationalRect x y w h
       where
-        h = 0.1 -- terminal height, 10%
-        w = 0.3 -- terminal width
+        h = 0.1               -- terminal height, 10%
+        w = 0.3               -- terminal width
         y = hidden_border
-        x = (1-w)/2 -- distance from left
+        x = (1-w)/2           -- distance from left
     spawnGcal = "google-chrome-stable --kiosk calendar.google.com";
     findGcal = resource =? "google-chrome";
     manageGcal = customFloating leftThird
@@ -153,7 +155,6 @@ color15 = "#e6e6e6"
 
 myNormalBorderColor  = color8
 myFocusedBorderColor = color5
--- Width of the window border in pixels.
 myBorderWidth = 3
 
 -- for conky
