@@ -8,6 +8,7 @@ import XMonad.Actions.UpdatePointer
 import XMonad.Actions.NoBorders
 import XMonad.Config.Desktop
 import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.DynamicProperty
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Layout.Fullscreen
@@ -58,28 +59,44 @@ myTerminal = "kitty"
 myManageHook = composeOne
   [ isFullscreen -?> (doF W.focusDown <+> doFullFloat)
   , className =? "Gimp"           -?> doFloat
-  , title =? "Plover"         -?> doFloat
+  , title =? "Plover"             -?> doFloat
   , isDialog                      -?> doFloat
   , return True -?> doF W.swapDown
   ] <+> namedScratchpadManageHook myScratchpads
 
+myHandleEventHook = composeAll
+    [ dynamicPropertyChange "WM_NAME" (title =? "Spotify" --> floatSpotify)
+    , dynamicPropertyChange "WM_NAME" (findGmail --> floatRight)
+    , dynamicPropertyChange "WM_NAME" (findGcal --> floatRight)
+    ]
+  where
+    hidden_border = -0.002
+    floatSpotify = customFloating $ W.RationalRect x y w h
+      where
+        h = 0.3
+        w = 0.2
+        y = (1-h)/2
+        x = (1-h)/2
+    floatRight = customFloating $ W.RationalRect x y w h
+      where
+        x = (1-w) - hidden_border
+        y = hidden_border
+        w = 0.3
+        h = 1.01
+    findGcal = resource =? "google-chrome" <&&> (take 2 <$> words <$> title) =? ["Google","Calendar"]
+    findGmail = resource =? "google-chrome" <&&> (elem "Gmail" <$> words <$> title)
 
-myScratchpads = [ NS "spotify"  spawnSpotify  findSpotify  manageSpotify
+myScratchpads = [ NS "spotify"  spawnSpotify  findSpotify doFloat
                 , NS "terminal" spawnTerm findTerm manageTerm
-                , NS "gcal" spawnGcal findGcal manageGcal
-                , NS "gmail" spawnGmail findGmail manageGmail
+                , NS "gcal" spawnGcal findGcal doFloat
+                , NS "gmail" spawnGmail findGmail doFloat
                 , NS "notes" spawnNotes findNotes manageNotes
                 ]
   where
     hidden_border = -0.002
     spawnSpotify = "spotify"
     findSpotify = className =? "Spotify"
-    manageSpotify = customFloating $ W.RationalRect x y w h
-      where -- Irrelevant. Spotify doesn't set className until XMonad has already drawn it.
-        h = 0.3
-        w = 0.2
-        y = (1-h)/2
-        x = (1-h)/2
+
     spawnNotes = myTerminal ++ " --name notes -e nvim ~/.messages"
     findNotes  = resource =? "notes"
     manageNotes = customFloating $ W.RationalRect x y w h
@@ -96,15 +113,15 @@ myScratchpads = [ NS "spotify"  spawnSpotify  findSpotify  manageSpotify
         w = 0.3               -- terminal width
         y = hidden_border
         x = (1-w)/2           -- distance from left
-    spawnGcal = "google-chrome-stable --kiosk calendar.google.com";
-    findGcal = resource =? "google-chrome";
-    manageGcal = customFloating leftThird
+    spawnGcal = "google-chrome-stable --new-window --kiosk calendar.google.com"
+    findGcal = resource =? "google-chrome" <&&> (take 2 <$> words <$> title) =? ["Google","Calendar"]
+    manageGcal = customFloating rightThird
 
-    spawnGmail = "google-chrome-stable --kiosk mail.google.com";
-    findGmail = resource =? "google-chrome";
-    manageGmail = customFloating leftThird
+    spawnGmail = "google-chrome-stable --new-window --kiosk mail.google.com"
+    findGmail = resource =? "google-chrome" <&&> (elem "Gmail" <$> words <$> title)
+    manageGmail = customFloating rightThird
 
-    leftThird = W.RationalRect x y w h
+    rightThird = W.RationalRect x y w h
       where
         h = 1.01
         w = 0.4
@@ -452,6 +469,7 @@ mySettings = def {
   -- hooks, layouts
   layoutHook         = myLayout,
   manageHook         = myManageHook,
+  handleEventHook    = myHandleEventHook,
   startupHook        = myStartupHook,
   logHook            = myLogHook
 }
