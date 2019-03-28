@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 unlink ~/.config/conky
 unlink ~/.config/kitty
