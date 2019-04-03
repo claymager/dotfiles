@@ -34,6 +34,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((modMask, xK_d),                 runScratchpad "discord")
   , ((modMask .|. controlMask, xK_p), runScratchpad "python")
   , ((modMask .|. controlMask, xK_h), runScratchpad "ghci")
+  , ((modMask .|. controlMask, xK_s), runScratchpad "plover")
   , ((modMask, xK_z),                 runScratchpad "spotify")
   , ((modMask, xK_a),                 runScratchpad "notes")
 

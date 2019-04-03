@@ -12,11 +12,11 @@ import MySettings (myTerminal)
 
 -- Exports
 myManageHook = composeOne
-  [ isFullscreen        -?> (doF W.focusDown <+> doFullFloat)
-  , className =? "Gimp" -?> doFloat
-  , title =? "Plover"   -?> doFloat
-  , isDialog            -?> doFloat
-  , return True         -?> doF W.swapDown
+  [ isFullscreen            -?> (doF W.focusDown <+> doFullFloat)
+  , className =? "Gimp"     -?> doFloat
+  , className =? "Xmessage" -?> floatCenter
+  , isDialog                -?> doFloat
+  , return True             -?> doF W.swapDown
   ] <+> namedScratchpadManageHook myScratchpads
 
 runScratchpad = namedScratchpadAction myScratchpads
@@ -35,8 +35,9 @@ myScratchpads =
   , NS "notes"    spawnNotes   findNotes   manageNotes
   , NS "spotify"  spawnSpotify findSpotify doFloat
   , NS "terminal" spawnTerm    findTerm    manageTerm
-  , NS "python" spawnPython findPython managePython
-  , NS "ghci" spawnGhci findGhci manageGhci
+  , NS "plover"   spawnPlover  findPlover  managePlover
+  , NS "python"   spawnPython  findPython  managePython
+  , NS "ghci"     spawnGhci    findGhci    manageGhci
   ]
 
 
@@ -51,11 +52,17 @@ floatRight = customFloating $ W.RationalRect x y w h
     w = 0.3            -- width of window
     h = 0.66           -- height of window
 
+floatCenter =  customFloating $ W.RationalRect x y w h
+  where
+    h = 0.5
+    w = 0.3
+    y = (1-h)/2
+    x = (1-w)/2
 
 -- Instance definitions
-spawnSpotify =  "spotify"
-findSpotify  =  className =? "Spotify"
-floatSpotify =  customFloating $ W.RationalRect x y w h
+spawnSpotify = "spotify"
+findSpotify  = className =? "Spotify"
+floatSpotify = floatCenter
   where
     h = 0.5
     w = 0.3
@@ -79,7 +86,6 @@ spawnGmail = browserKiosk "mail.google.com"
 findGmail  = resource =? "google-chrome" <&&> (elem "Gmail" <$> words <$> title)
 floatGmail = floatRight
 
-
 spawnNotes  = myTerminal ++ " --name notes -e nvim ~/.messages"
 findNotes   = resource =? "notes"
 manageNotes = customFloating $ W.RationalRect x y w h
@@ -97,6 +103,15 @@ manageTerm = customFloating $ W.RationalRect x y w h
     w = 0.29
     y = -border
     x = (1-w)/2
+
+spawnPlover  = "plover"
+findPlover   = title =? "Plover"
+managePlover = customFloating $ W.RationalRect x y w h
+  where
+    h = 0.35
+    w = 0.12
+    y = (1-h) + border
+    x = 0.006
 
 spawnPython  = myTerminal ++ " --class python --override 'background = #321b32' -e nix-shell -p python37Packages.ipython --command ipython"
 findPython   = className =? "python"

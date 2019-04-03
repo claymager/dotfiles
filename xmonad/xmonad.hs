@@ -4,6 +4,7 @@ import Graphics.X11.ExtraTypes.XF86
 import System.Exit 
 import XMonad
 import XMonad.Actions.UpdatePointer (updatePointer)
+import XMonad.Hooks.EwmhDesktops (ewmh)
 import XMonad.Hooks.DynamicLog (ppOutput, dynamicLogWithPP)
 import XMonad.Layout.Fullscreen
 import XMonad.Layout.Gaps
@@ -65,8 +66,7 @@ debugLogHook = dynamicLogWithPP $ def {
 ------------------------------------------------------------------------
 -- Run xmonad with all the defaults we set up.
 --
-main = do
-  xmonad mySettings
+main = xmonad $ ewmh mySettings
 
 mySettings = def {
   -- simple stuff
