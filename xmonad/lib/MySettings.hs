@@ -15,7 +15,7 @@ myTerminal = "kitty"
 
 xpconfig = def {
   bgColor = background,
-  font = "xft:Hasklig-16",
+  font = "xft:Fantasque Sans Mono-16",
   position = CenteredAt 0.4 0.5,
   height = 40
 }
