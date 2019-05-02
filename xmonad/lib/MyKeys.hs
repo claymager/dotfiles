@@ -37,10 +37,11 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((modMask .|. controlMask, xK_s), runScratchpad "plover")
   , ((modMask, xK_z),                 runScratchpad "spotify")
   , ((modMask, xK_a),                 runScratchpad "notes")
+  , ((modMask .|. controlMask, xK_n),   spawn "google-chrome-stable --kiosk --new-window netflix.com")
 
   -- Password-store interface
   , ((modMask, xK_p),                 passPrompt xpconfig)
-  , ((modMask .|. shiftMask, xK_p), passGeneratePrompt xpconfig)
+  , ((modMask .|. shiftMask, xK_p),   passGeneratePrompt xpconfig)
 
   -- Screenshots
   , ((modMask,               xK_x),   spawn "scrot -ue 'mv $f ~/pictures/screenshots/'")
@@ -56,9 +57,9 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((0, 0x1008FF17),                 spawn "playerctl next")
 
   -- Backlight
-  , ((0, xF86XK_MonBrightnessUp),     spawn "light -A 12")
-  , ((0, xF86XK_MonBrightnessDown),   spawn "light -U 12")
-  , ((modMask, xF86XK_MonBrightnessDown),   spawn "light 1")
+  , ((0, xF86XK_MonBrightnessUp),         spawn "light -A 12")
+  , ((0, xF86XK_MonBrightnessDown),       spawn "light -U 12")
+  , ((modMask, xF86XK_MonBrightnessDown), spawn "light 1")
 
   --------------------------------------------------------------------
   -- "Standard" xmonad key bindings
@@ -92,9 +93,9 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((modMask, xK_m),                 withFocused $ windows . W.sink)
 
   -- Quit xmonad.
-  , ((modMask, xK_q),                 restart "xmonad" True)
-  , ((modMask .|. shiftMask, xK_q),   io (exitWith ExitSuccess))
-  , ((modMask .|. shiftMask .|. controlMask, xK_c),   spawn "systemctl hibernate")
+  , ((modMask, xK_q),                                restart "xmonad" True)
+  , ((modMask .|. shiftMask, xK_q),                  io exitSuccess)
+  , ((modMask .|. shiftMask .|. controlMask, xK_c),  spawn "systemctl hibernate")
   ] ++
 
   -- mod-[1..9], Switch to workspace N

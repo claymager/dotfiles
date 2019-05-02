@@ -1,29 +1,30 @@
 {-# LANGUAGE OverloadedStrings #-}
-module MySettings (
-  foreground, 
-  background, 
-  myNormalBorderColor,
-  myFocusedBorderColor,
-  conkyFocus,
-  conkyActive,
-  xpconfig,
-  myTerminal) where
+module MySettings
+    ( foreground
+    , background
+    , myNormalBorderColor
+    , myFocusedBorderColor
+    , conkyFocus
+    , conkyActive
+    , xpconfig
+    , myTerminal
+    )
+where
 
-import XMonad.Prompt
+import           XMonad.Prompt
 
 myTerminal = "kitty"
 
-xpconfig = def {
-  bgColor = background,
-  font = "xft:Fantasque Sans Mono-16",
-  position = CenteredAt 0.4 0.5,
-  height = 40
-}
+xpconfig = def { bgColor  = background
+               , font     = "xft:Fantasque Sans Mono-16"
+               , position = CenteredAt 0.4 0.5
+               , height   = 40
+               }
 
-myNormalBorderColor  = color8
+myNormalBorderColor = color8
 myFocusedBorderColor = color5
 
-conkyFocus  = tail color13
+conkyFocus = tail color13
 conkyActive = tail color4
 
 {- color scheme, automatically generated-}
@@ -44,4 +45,3 @@ color12 = "#caa9fa"
 color13 = "#ff92d0"
 color14 = "#9aedfe"
 color15 = "#e6e6e6"
-
