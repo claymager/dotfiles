@@ -2,9 +2,10 @@
 module MyKeys (myModMask, myKeys) where
 
 import Graphics.X11.ExtraTypes.XF86
-import System.Exit 
+import System.Exit
 import XMonad
 import XMonad.Actions.NoBorders
+import XMonad.Actions.ShowText
 import XMonad.Layout.Spacing
 import XMonad.Prompt
 import XMonad.Prompt.Pass
@@ -13,8 +14,9 @@ import qualified Data.Map        as M
 import qualified XMonad.StackSet as W
 
 import MyWindowHooks (runScratchpad)
-import MySettings (xpconfig)
+import MySettings (xpconfig, textConfig)
 
+notify msg = flashText textConfig 0.1 msg
 ------------------------------------------------------------------------
 -- Key bindings
 --
@@ -27,6 +29,7 @@ myModMask = mod4Mask
 myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   -- Launchers
   [ ((modMask, xK_t),                 spawn $ XMonad.terminal conf)
+  , ((modMask .|. shiftMask, xK_t),   spawn "xterm")
   , ((modMask, xK_c),                 runScratchpad "gcal")
   , ((modMask .|. shiftMask, xK_c),   runScratchpad "gmail")
   , ((modMask, xK_f),                 spawn "qutebrowser")
@@ -61,16 +64,22 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((0, xF86XK_MonBrightnessDown),       spawn "light -U 12")
   , ((modMask, xF86XK_MonBrightnessDown), spawn "light 1")
 
+  -- Notifications
+  , ((modMask .|. shiftMask .|. controlMask, xK_q), notify "colemak")
+  , ((modMask .|. shiftMask .|. controlMask, xK_s), notify "steno")
+  , ((modMask .|. shiftMask .|. controlMask, xK_v), notify "neovim")
+
+
   --------------------------------------------------------------------
   -- "Standard" xmonad key bindings
   --
-
   -- Layout management
   , ((modMask, xK_l),                 sendMessage NextLayout)
   , ((modMask, xK_comma),             sendMessage (IncMasterN 1))
   , ((modMask, xK_period),            sendMessage (IncMasterN (-1)))
   , ((modMask, xK_o),                 sendMessage Shrink)
   , ((modMask, xK_i),                 sendMessage Expand)
+
   -- Spacing
   , ((modMask, xK_k),                 incScreenSpacing 5 >> incWindowSpacing 5)
   , ((modMask, xK_j),                 decScreenSpacing 5 >> decWindowSpacing 5)

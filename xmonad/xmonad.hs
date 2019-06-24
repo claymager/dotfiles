@@ -4,6 +4,7 @@ import           Graphics.X11.ExtraTypes.XF86
 import           System.Exit
 import           XMonad
 import           XMonad.Actions.UpdatePointer   ( updatePointer )
+import           XMonad.Actions.ShowText
 import           XMonad.Hooks.EwmhDesktops      ( ewmh )
 import           XMonad.Hooks.DynamicLog        ( ppOutput , dynamicLogWithPP)
 import           XMonad.Layout.Fullscreen
@@ -38,12 +39,12 @@ myLayout =
 myFocusFollowsMouse :: Bool
 myFocusFollowsMouse = True
 
-myMouseBindings (XConfig { XMonad.modMask = modMask }) =
+myMouseBindings XConfig{ XMonad.modMask = modMask } =
     M.fromList
-        $ [ ((modMask, button1), (\w -> focus w >> mouseMoveWindow w))
-          , ((modMask, button2), (\w -> focus w >> windows W.swapMaster))
-          , ((modMask, button3), (\w -> focus w >> mouseResizeWindow w))
-          ]
+        [ ((modMask, button1), (\w -> focus w >> mouseMoveWindow w))
+        , ((modMask, button2), (\w -> focus w >> windows W.swapMaster))
+        , ((modMask, button3), (\w -> focus w >> mouseResizeWindow w))
+        ]
 
 
 ------------------------------------------------------------------------
@@ -74,7 +75,7 @@ mySettings = def { terminal           = myTerminal
                  , mouseBindings      = myMouseBindings
                  , layoutHook         = myLayout
                  , manageHook         = myManageHook
-                 , handleEventHook    = myHandleEventHook
+                 , handleEventHook    = myHandleEventHook <+> handleTimerEvent
                  , startupHook        = myStartupHook
                  , logHook            = myLogHook
                  }

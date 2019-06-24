@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module MySettings
     ( foreground
     , background
@@ -7,19 +8,28 @@ module MySettings
     , conkyFocus
     , conkyActive
     , xpconfig
+    , textConfig
     , myTerminal
     )
 where
 
-import           XMonad.Prompt
+import XMonad.Prompt
+import XMonad.Actions.ShowText
 
 myTerminal = "kitty"
 
-xpconfig = def { bgColor  = background
-               , font     = "xft:Fantasque Sans Mono-16"
-               , position = CenteredAt 0.4 0.5
-               , height   = 40
-               }
+xpconfig = def
+    { font     = "xft:Fantasque Sans Mono-16"
+    , bgColor  = background
+    , position = CenteredAt 0.4 0.5
+    , height   = 40
+    }
+
+textConfig = def 
+    { st_font  = "xft:Oligopoly-86"
+    , st_bg  = background
+    , st_fg = foreground
+    }
 
 myNormalBorderColor = color8
 myFocusedBorderColor = color5

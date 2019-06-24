@@ -16,8 +16,7 @@ import           MySettings                     ( myTerminal )
 
 -- Exports
 myManageHook = composeOne
-    [ --isFullscreen            -?> (doF W.focusDown <+> doFullFloat)
-    , className =? "Gimp"     -?> doFloat
+    [ className =? "Gimp"     -?> doFloat
     , className =? "Xmessage" -?> floatCenter
     , className =? "VirtualBox Machine" -?> doIgnore
     , isDialog                -?> doFloat
