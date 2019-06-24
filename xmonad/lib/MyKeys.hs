@@ -8,13 +8,13 @@ import XMonad.Actions.NoBorders
 import XMonad.Actions.ShowText
 import XMonad.Layout.Spacing
 import XMonad.Prompt
-import XMonad.Prompt.Pass
 import XMonad.Util.NamedScratchpad
 import qualified Data.Map        as M
 import qualified XMonad.StackSet as W
 
 import MyWindowHooks (runScratchpad)
 import MySettings (xpconfig, textConfig)
+import Pass (passPrompt, passGeneratePrompt)
 
 notify msg = flashText textConfig 0.1 msg
 ------------------------------------------------------------------------
