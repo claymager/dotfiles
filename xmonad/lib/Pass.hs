@@ -110,7 +110,7 @@ selectPassword passLabel = spawn $ "pass --clip \"" ++ escapeQuote passLabel ++ 
 -- If the entry already exists, it is updated with a new password.
 --
 generatePassword :: String -> X ()
-generatePassword passLabel = spawn $ "pass generate --force \"" ++ escapeQuote passLabel ++ "\" 30"
+generatePassword passLabel = spawn $ "pass generate --clip --force \"" ++ escapeQuote passLabel ++ "\" 30"
 
 -- | Remove a password stored for a given entry.
 --

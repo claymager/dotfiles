@@ -5,6 +5,7 @@ import Graphics.X11.ExtraTypes.XF86
 import System.Exit
 import XMonad
 import XMonad.Actions.NoBorders
+import XMonad.Actions.DeManage
 import XMonad.Actions.ShowText
 import XMonad.Layout.Spacing
 import XMonad.Prompt
@@ -15,6 +16,7 @@ import qualified XMonad.StackSet as W
 import MyWindowHooks (runScratchpad)
 import MySettings (xpconfig, textConfig)
 import Pass (passPrompt, passGeneratePrompt)
+import Clip (clipPrompt, clipSavePrompt)
 
 notify msg = flashText textConfig 0.1 msg
 ------------------------------------------------------------------------
@@ -43,8 +45,10 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((modMask .|. controlMask, xK_n),   spawn "google-chrome-stable --kiosk --new-window netflix.com")
 
   -- Password-store interface
-  , ((modMask, xK_p),                 passPrompt xpconfig)
+ , ((modMask, xK_p),                 passPrompt xpconfig)
   , ((modMask .|. shiftMask, xK_p),   passGeneratePrompt xpconfig)
+  , ((modMask .|. shiftMask .|. controlMask, xK_apostrophe),   clipSavePrompt xpconfig)
+  , ((modMask .|. shiftMask, xK_apostrophe),   clipPrompt xpconfig)
 
   -- Screenshots
   , ((modMask,               xK_x),   spawn "scrot -ue 'mv $f ~/pictures/screenshots/'")
@@ -88,7 +92,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
                                       toggleScreenSpacingEnabled)
 
   -- Resize viewed windows to the correct size.
-  , ((modMask, xK_r),                 refresh)
+  -- , ((modMask, xK_r),                 refresh)
   , ((modMask, xK_Escape),            setLayout $ XMonad.layoutHook conf)
 
   -- Window management
