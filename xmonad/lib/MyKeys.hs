@@ -31,9 +31,9 @@ myModMask = mod4Mask
 myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   -- Launchers
   [ ((modMask, xK_t),                 spawn $ XMonad.terminal conf)
-  , ((modMask .|. shiftMask, xK_t),   spawn "xterm")
+  , ((modMask .|. mod1Mask, xK_t),    spawn "xterm")
   , ((modMask, xK_c),                 runScratchpad "gcal")
-  , ((modMask .|. shiftMask, xK_c),   runScratchpad "gmail")
+  , ((modMask .|. mod1Mask, xK_m),    runScratchpad "gmail")
   , ((modMask, xK_f),                 spawn "qutebrowser")
   , ((modMask, xK_s),                 runScratchpad "terminal")
   , ((modMask, xK_d),                 runScratchpad "discord")
@@ -42,10 +42,11 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((modMask .|. controlMask, xK_s), runScratchpad "plover")
   , ((modMask, xK_z),                 runScratchpad "spotify")
   , ((modMask, xK_a),                 runScratchpad "notes")
-  , ((modMask .|. controlMask, xK_n),   spawn "google-chrome-stable --kiosk --new-window netflix.com")
+  , ((modMask .|. mod1Mask, xK_n),    spawn "google-chrome-stable --kiosk --new-window netflix.com")
+  , ((modMask .|. mod1Mask, xK_c),    spawn "google-chrome-stable --new-window creddle.io")
 
   -- Password-store interface
- , ((modMask, xK_p),                 passPrompt xpconfig)
+ , ((modMask, xK_p),                  passPrompt xpconfig)
   , ((modMask .|. shiftMask, xK_p),   passGeneratePrompt xpconfig)
   , ((modMask .|. shiftMask .|. controlMask, xK_apostrophe),   clipSavePrompt xpconfig)
   , ((modMask .|. shiftMask, xK_apostrophe),   clipPrompt xpconfig)
