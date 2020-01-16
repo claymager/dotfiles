@@ -54,6 +54,7 @@ export DEFAULT='${color 6272a4}'
 export PRI_A='${color1}'
 export PRI_B='${color2}'
 export PRI_C='${color}'
+export PRI_D=$DEFAULT
 #export PRI_X='${color blue}'    # color unless explicitly defined
 
 # There is highlighting for tasks that have been done,
