@@ -108,7 +108,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   -- Quit xmonad.
   , ((modMask, xK_q),                                restart "xmonad" True)
   , ((modMask .|. shiftMask, xK_q),                  io exitSuccess)
-  , ((modMask .|. shiftMask .|. controlMask, xK_c),  spawn "systemctl hibernate")
+  -- , ((modMask .|. shiftMask .|. controlMask, xK_q),  spawn "systemctl hibernate")
   ] ++
 
   -- mod-[1..9], Switch to workspace N

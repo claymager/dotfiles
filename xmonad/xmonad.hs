@@ -4,6 +4,7 @@ import           Graphics.X11.ExtraTypes.XF86
 import           System.Exit
 import           XMonad
 import           XMonad.Actions.UpdatePointer   ( updatePointer )
+import           XMonad.Actions.DeManage
 import           XMonad.Actions.ShowText
 import           XMonad.Hooks.EwmhDesktops      ( ewmh )
 import           XMonad.Hooks.DynamicLog        ( ppOutput , dynamicLogWithPP)
@@ -27,8 +28,8 @@ import           MyWindowHooks
 myBorderWidth = 3
 myLayout =
     spacingRaw False (Border 10 10 10 440) True (Border 10 10 10 10) True
-        $   ThreeColMid 1 (3 / 100) (5 / 12)
-        ||| Mirror (Tall 4 (3 / 100) (2 / 3))
+        $   Mirror (Tall 4 (3 / 100) (2 / 3))
+        ||| ThreeColMid 1 (3 / 100) (5 / 12)
         ||| spiral (6 / 7)
         ||| Full
 
@@ -42,7 +43,7 @@ myFocusFollowsMouse = True
 myMouseBindings XConfig{ XMonad.modMask = modMask } =
     M.fromList
         [ ((modMask, button1), (\w -> focus w >> mouseMoveWindow w))
-        , ((modMask, button2), (\w -> focus w >> windows W.swapMaster))
+        , ((modMask, button2), (\w -> focus w >> demanage w))
         , ((modMask, button3), (\w -> focus w >> mouseResizeWindow w))
         ]
 
@@ -50,7 +51,7 @@ myMouseBindings XConfig{ XMonad.modMask = modMask } =
 ------------------------------------------------------------------------
 -- Hooks
 --
-myInitCommands = ["feh --bg-fill .wallpaper", "pkill conky; conky"]
+myInitCommands = [ "pkill conky; conky" ]
 
 myStartupHook = do
     mapM_ spawn myInitCommands

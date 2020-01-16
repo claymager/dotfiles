@@ -24,17 +24,17 @@ conkyPP = def
     }
 
 -- Symbols to display for layouts
-layoutSymbols = [sThreeCol, sTall, sSpiral, sFull]
+layoutSymbols = [tall, threeCol, spiral, full]
   where
-    sThreeCol = unicode "f58d"
-    sTall     = unicode "f0db"
-    sSpiral   = unicode "f2f9"
-    sFull     = unicode "f24d"
+    threeCol = unicode "f58d"
+    tall     = unicode "f0db"
+    spiral   = unicode "f2f9"
+    full     = unicode "f24d"
 
 -- Order of layouts
 layoutPosition x = case x of
-    "ThreeCol" -> 0
-    "Tall"     -> 1
+    "Tall"     -> 0
+    "ThreeCol" -> 1
     "Spiral"   -> 2
     "Full"     -> 3
     x          -> -1

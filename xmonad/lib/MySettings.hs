@@ -25,9 +25,9 @@ xpconfig = def
     , height   = 40
     }
 
-textConfig = def 
+textConfig = def
     { st_font  = "xft:Oligopoly-86"
-    , st_bg  = background
+    , st_bg  = "#336699"
     , st_fg = foreground
     }
 
