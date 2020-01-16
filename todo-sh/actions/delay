@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+
+readonly SED_DATE_RE="[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}"
+readonly BASH_DATE_RE="[0-9]{4}-[0-9]{2}-[0-9]{2}"
+
+function usage()
+{ 
+  echo "$(basename $0) ITEM [DATE]"
+  echo "  Set threshold of ITEM to DATE"
+  echo "  If DATE is not given, defaults to 'tomorrow'."
+  echo ""
+  exit
+}
+
+function add_or_replace_deferral_date()
+{
+  TAG=t
+  if [[ -z "$TODO_AGAIN_ADD_DEFERRAL" && ! $LINE =~ .*\ $TAG:[[:digit:]].* ]]
+  then
+    LINE="$LINE $TAG:$TODAY"
+  fi
+  replace_tagged_date
+}
+
+function parse_options()
+{
+  local action=$1
+  shift
+
+  [ "$action" = "usage" ] && usage
+
+  # Retrieve the item number from the arguments
+  ITEM=$1
+  if [[ ! "$ITEM" =~ ^[0-9]+$ ]]
+  then
+    error "$ITEM: invalid item number"
+  exit
+  fi
+
+  shift
+  if [[ -z $1 ]]; then
+    DATE=$(date --date='tomorrow' +%F)
+  else
+    DATE=$(date --date=$1 +%F) || exit 1
+  fi
+}
+
+function error()
+{
+  echo "error: $@" >&2
+  exit 1
+}
+
+function set_deferral_date()
+{
+  TAG=t
+  if [[ ! $LINE =~ .*\ $TAG:[[:digit:]].* ]]
+  then
+    LINE="$LINE $TAG:$DATE"
+  else
+    LINE=$(echo "$LINE" | sed "s/\(.*$TAG:\)\($SED_DATE_RE\)\(.*\)/\1$DATE\3/")
+  fi
+}
+
+function get_line()
+{
+  [ -f "$TODO_FILE" ] || error "$TODO_FILE: no such file"
+  # Get the line from the todo file
+  LINE=$(sed "$ITEM!d" "$TODO_FILE")
+  [ -z "$LINE" ] && error "$ITEM: no such line"
+}
+
+parse_options "$@"
+get_line
+set_deferral_date
+if [[ "$LINE" != "" ]]
+then
+  read -p "Update to '$LINE'? (y/n) " CONFIRM
+  if [[ $CONFIRM = "y" ]]
+  then
+    # todo.sh rm requires input and leaves a blank line
+    yes | "$TODO_FULL_SH" command rm "$ITEM" > /dev/null
+    sed -i '/^$/d' $TODO_FILE
+    "$TODO_FULL_SH" command add "$LINE"
+  else
+    echo "TODO: No update."
+  fi
+fi
