@@ -11,10 +11,10 @@ import           MySettings                     ( conkyFocus , conkyActive)
 conkyPP :: PP
 conkyPP = def
     { ppOutput          = writeFile "/home/john/tmp/xmonadStatus" . workspaceFont . ("${color}" ++)
-    , ppCurrent         = processWorkspace (-8) conkyFocus (unicode "25c9")
-    , ppVisible         = processWorkspace (-8) conkyActive (unicode "25c9")
-    , ppHidden          = processWorkspace (-8) conkyActive (unicode "25cb")
-    , ppHiddenNoWindows = processWorkspace 0 "" (unicode "2022")
+    , ppCurrent         = processWorkspace conkyFocus (unicode "25c9")
+    , ppVisible         = processWorkspace conkyActive (unicode "25c9")
+    , ppHidden          = processWorkspace conkyActive (unicode "25cb")
+    , ppHiddenNoWindows = processWorkspace "" (unicode "2219")
     , ppOrder           = myLogOrder
     , ppSep             = "\n"
     , ppWsSep           = "\n"
@@ -40,17 +40,18 @@ layoutPosition x = case x of
     x          -> -1
 
 -- Font information
-workspaceFont = applyFont "Ubuntu Mono" 60
-workspaceRowPrefix = "${voffset -25}${goto 98}"
+workspaceFont = applyFont "Hasklig" 60
+workspaceRowPrefix = "${voffset -32}${goto 98}"
 layoutFont = applyFont "Font Awesome 5 Free Solid" 25
 layoutSectionPrefix = "${voffset -186}"
 layoutSymbolPrefix = "${goto 327}${voffset 5}"
 titlePrefix = "${alignc}${voffset -48}${font}"
 
-processWorkspace :: Int -> String -> String -> String -> String
-processWorkspace offset color symbol name = if name == "NSP"
+processWorkspace :: String -> String -> String -> String
+processWorkspace color symbol name =
+  if name == "NSP"
     then "" -- filters scratchpad workspace
-    else conkyVOffset offset $ colorWrap color symbol
+    else colorWrap color symbol
 
 myLogOrder :: [String] -> [String]
 myLogOrder (ws : rest) = splitToRows ws ++ rest
