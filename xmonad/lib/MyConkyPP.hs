@@ -41,10 +41,10 @@ layoutPosition x = case x of
 
 -- Font information
 workspaceFont = applyFont "Hasklig" 60
-workspaceRowPrefix = "${voffset -32}${goto 98}"
+workspaceRowPrefix = "${voffset -32}${offset 77}"
 layoutFont = applyFont "Font Awesome 5 Free Solid" 25
 layoutSectionPrefix = "${voffset -186}"
-layoutSymbolPrefix = "${goto 327}${voffset 5}"
+layoutSymbolPrefix = "${offset 310}${voffset 5}"
 titlePrefix = "${alignc}${voffset -48}${font}"
 
 processWorkspace :: String -> String -> String -> String
