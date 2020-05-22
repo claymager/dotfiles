@@ -7,6 +7,7 @@ import XMonad
 import XMonad.Actions.NoBorders
 import XMonad.Actions.DeManage
 import XMonad.Actions.ShowText
+import XMonad.Actions.Submap
 import XMonad.Layout.Spacing
 import XMonad.Prompt
 import XMonad.Util.NamedScratchpad
@@ -48,27 +49,34 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
     hyper      = withMask $ hyperMask
     alt        = withLAlt
     notifyMask = withMask $ modMask .|. shiftMask .|. controlMask .|. mod3Mask
+
+
+    scratchpads =
+      let
+        scratchMap :: KeySym -> String -> ((KeyMask, KeySym), X ())
+        scratchMap key name = ((0, key), runScratchpad name)
+      in
+        [ scratchMap xK_c "gcal"
+        , scratchMap xK_m "gmail"
+        , scratchMap xK_z "spotify"
+        , scratchMap xK_a "anki"
+        , scratchMap xK_l "calc"
+        , scratchMap xK_p "ipython"
+        , scratchMap xK_h "ghci"
+        , scratchMap xK_n "notes"
+        ];
+
   in M.fromList $
 
   -- Launchers
   [ (super xK_t,                 spawn $ XMonad.terminal conf)
-  , (withShift xK_t,             spawn "kitty -d=$focusdir")
-  , (alt xK_f,                   catchIO $ setEnv "focusdir" "/home/john/lab/haskell/proj/")
-  , (alt xK_t,                   spawn "env > /home/john/tmp/env.txt")
-  , (super xK_f,                 spawn "qutebrowser -l warning")
-  , (scratchpad xK_c,            runScratchpad "gcal")
-  , (scratchpad xK_m,            runScratchpad "gmail")
-  , (scratchpad xK_s,            runScratchpad "terminal")
-  , (scratchpad xK_d,            runScratchpad "discord")
-  , (scratchpad xK_p,            runScratchpad "ipython")
-  , (scratchpad xK_h,            runScratchpad "ghci")
-  -- , (scratchpad xK_s,            runScratchpad "plover")
-  , (scratchpad xK_z,            runScratchpad "spotify")
-  -- , (scratchpad xK_a,            runScratchpad "notes")
-  , (scratchpad xK_a,            runScratchpad "anki")
+  -- , (withShift xK_t,             spawn "kitty -d=$focusdir")
+  -- , (alt xK_f,                   catchIO $ setEnv "focusdir" "/home/john/lab/haskell/proj/")
+  -- , (alt xK_t,                   spawn "env > /home/john/tmp/env.txt")
+  , (super xK_f,                 spawn "qutebrowser 2> /dev/null")
   , (withCtl xK_n,               spawn "google-chrome-stable --kiosk --new-window netflix.com")
   , (withMask mod3Mask xK_g,     spawn "pavucontrol")
-  , (scratchpad xK_l,            runScratchpad "calc")
+  , (super xK_space,     submap . M.fromList $ scratchpads)
   -- , (withLAlt xK_c,              spawn "google-chrome-stable --new-window creddle.io")
 
   -- Password-store interface
@@ -100,7 +108,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
   -- , (notifyMask xK_s,                  notify "steno")
   -- , (notifyMask xK_v,                  notify "neovim")
 
-  , (super xK_F2,                      spawn "kitty nvim $HOME/github/config/xmonad/xmonad.hs")
+  , (super xK_F2,                 spawn "kitty nvim $HOME/github/config/xmonad/xmonad.hs")
+  , (withLAlt xK_F2,              spawn "kitty nvim /etc/nixos/")
 
   --------------------------------------------------------------------
   -- "Standard" xmonad key bindings
@@ -138,7 +147,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
   , (super     xK_q,             restart "xmonad" True)
   , (withShift xK_q,             io exitSuccess)
   , (withCtl   xK_q,             spawn "systemctl hibernate")
-  , (withCtl   xK_t,             spawn "nixos-rebuild test")
+  , (withLAlt   xK_t,             spawn "kitty --class small_float sudo nixos-rebuild test")
   ] ++
 
   -- mod-[1..9], Switch to workspace N

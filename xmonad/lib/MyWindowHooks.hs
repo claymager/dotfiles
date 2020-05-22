@@ -42,6 +42,7 @@ myManageHook = composeOne
     , className =? "Anki" <&&> title =? "Add" -?> doFloat
     -- , className =? "Anki" <&&> title =? "Anki" -?> doFloatAt 0 0
     , className =? "Xmessage" -?> floatCenter
+    , className =? "small_float" -?> smallFloat
     , className =? "VirtualBox Machine" -?> doIgnore
     , isDialog                -?> doFloat
     , return True             -?> doF W.swapDown
@@ -116,6 +117,14 @@ floatCenter = customFloating $ W.RationalRect x y w h
     w = 0.3
     y = (1 - h) / 2
     x = (1 - w) / 2
+
+smallFloat = customFloating $ W.RationalRect x y w h
+ where
+   h = 0.2
+   w = 0.3
+   y = 0.7
+   x = 0.1
+
 
 floatRepl = customFloating $ W.RationalRect x y w h
   where
