@@ -3,6 +3,7 @@ module MyWindowHooks
     ( myManageHook
     , myHandleEventHook
     , runScratchpad
+    , dismiss
     )
 where
 
@@ -11,19 +12,40 @@ import           XMonad.Hooks.DynamicProperty
 import           XMonad.Hooks.ManageHelpers
 import           XMonad.Util.NamedScratchpad
 import qualified XMonad.StackSet               as W
+import XMonad.Actions.DynamicWorkspaces (addHiddenWorkspace)
+import Control.Monad (filterM)
+import Data.Maybe (fromJust)
 
 import           MySettings                     ( myTerminal )
 
 -- Exports
+
+-- | Hides the active window, killing it if not a scratchpad
+--
+dismiss :: X()
+dismiss = withWindowSet $ \s -> do
+    if null (filter ((== scratchpadWorkspaceTag) . W.tag) (W.workspaces s))
+       then addHiddenWorkspace scratchpadWorkspaceTag
+       else return ()
+    focused <- return $ fmap W.focus . W.stack . W.workspace . W.current $ s
+    activePads <- filterM (beingUsed focused) scratchpads
+    case activePads of
+      [] -> kill
+      _  -> windows . W.shiftWin scratchpadWorkspaceTag $ fromJust focused
+    where
+      beingUsed :: Maybe Window -> NamedScratchpad -> X Bool
+      beingUsed mWin pad = maybe (return False) (runQuery $ query pad) mWin
+
 myManageHook = composeOne
     [ className =? "Gimp"     -?> doFloat
     , className =? "Xmessage" -?> floatCenter
     , className =? "VirtualBox Machine" -?> doIgnore
     , isDialog                -?> doFloat
     , return True             -?> doF W.swapDown
-    ] <+> namedScratchpadManageHook myScratchpads
+    ] <+> namedScratchpadManageHook scratchpads
 
-runScratchpad = namedScratchpadAction myScratchpads
+runScratchpad = namedScratchpadAction scratchpads
+
 
 myHandleEventHook = composeAll
     [ dynamicPropertyChange "WM_CLASS" (findDiscord --> floatDiscord)
@@ -32,19 +54,31 @@ myHandleEventHook = composeAll
     , dynamicPropertyChange "WM_CLASS" (findSpotify --> floatSpotify)
     ]
 
-myScratchpads =
+scratchpads =
     [ NS "discord"  spawnDiscord findDiscord floatDiscord
     , NS "gcal"     spawnGcal    findGcal    doFloat
     , NS "gmail"    spawnGmail   findGmail   doFloat
     , NS "notes"    spawnNotes   findNotes   manageNotes
     , NS "spotify"  spawnSpotify findSpotify doFloat
     , NS "terminal" spawnTerm    findTerm    manageTerm
-    , NS "plover"   spawnPlover  findPlover  managePlover
     , NS "python"   spawnPython  findPython  managePython
     , NS "ghci"     spawnGhci    findGhci    manageGhci
+    -- , NS "plover"   spawnPlover  findPlover  managePlover
+    , anki
     ]
 
+anki =
+  NS
+   "anki"
+   "anki"
+   (className =? "Anki" <&&> title =? "User 1 - Anki")
+   (doF W.swapDown)
 -- Settings
+--
+-- tag of the scratchpad workspace
+scratchpadWorkspaceTag :: String
+scratchpadWorkspaceTag = "NSP"
+
 browserKiosk = ("google-chrome-stable --new-window --kiosk " ++)
 border = 0.0025
 full = 1 + (2 * border)

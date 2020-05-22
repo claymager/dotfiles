@@ -13,11 +13,16 @@ import XMonad.Util.NamedScratchpad
 import qualified Data.Map        as M
 import qualified XMonad.StackSet as W
 
-import MyWindowHooks (runScratchpad)
+import System.Environment (lookupEnv, setEnv, unsetEnv)
+import Data.Maybe (fromMaybe)
+
+
+import MyWindowHooks (runScratchpad, dismiss)
 import MySettings (xpconfig, textConfig)
 import Pass (passPrompt, passGeneratePrompt)
 import Clip (clipPrompt, clipSavePrompt)
 
+myGetEnv name = lookupEnv name >>= return . (fromMaybe "")
 notify msg = flashText textConfig 0.1 msg
 ------------------------------------------------------------------------
 -- Key bindings
@@ -119,7 +124,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
   , (super xK_Escape,            setLayout $ XMonad.layoutHook conf)
 
   -- Window management
-  , ((modMask .|. controlMask, xK_c), kill)
+  , (withCtl xK_c,               dismiss)
+  , (withMask (modMask .|. controlMask .|. shiftMask) xK_c, kill)
   , (super xK_h,                 windows W.focusMaster  )
   , (super xK_n,                 windows W.focusDown)
   , (super xK_e,                 windows W.focusUp  )
