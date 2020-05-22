@@ -15,6 +15,7 @@ import qualified XMonad.StackSet               as W
 import XMonad.Actions.DynamicWorkspaces (addHiddenWorkspace)
 import Control.Monad (filterM)
 import Data.Maybe (fromJust)
+import           Data.List  (intercalate)
 
 import           MySettings                     ( myTerminal )
 
@@ -38,6 +39,8 @@ dismiss = withWindowSet $ \s -> do
 
 myManageHook = composeOne
     [ className =? "Gimp"     -?> doFloat
+    , className =? "Anki" <&&> title =? "Add" -?> doFloat
+    -- , className =? "Anki" <&&> title =? "Anki" -?> doFloatAt 0 0
     , className =? "Xmessage" -?> floatCenter
     , className =? "VirtualBox Machine" -?> doIgnore
     , isDialog                -?> doFloat
@@ -45,6 +48,25 @@ myManageHook = composeOne
     ] <+> namedScratchpadManageHook scratchpads
 
 runScratchpad = namedScratchpadAction scratchpads
+
+type Command = String -> String
+
+asClass :: String -> Command
+asClass className cmd = cmd ++ " --class " ++ className
+
+withNix :: String -> Command
+withNix nixExpr cmd  = cmd ++ " -e nix-shell -p \"" ++ nixExpr ++ "\" --command "
+
+pyEnv version pkgs = 
+  let packages = intercalate " " $ ["black", "python-language-server", "ipython"] ++ pkgs
+  in "python" ++ version ++ ".withPackages (ps: with ps; [" ++ packages ++ "])"
+
+runCommand :: String -> Command
+runCommand cmd base = base ++ "\"" ++ cmd ++ "\""
+
+editFile :: String -> Command
+editFile path = runCommand ("nvim " ++ path)
+
 
 
 myHandleEventHook = composeAll
@@ -61,10 +83,8 @@ scratchpads =
     , NS "notes"    spawnNotes   findNotes   manageNotes
     , NS "spotify"  spawnSpotify findSpotify doFloat
     , NS "terminal" spawnTerm    findTerm    manageTerm
-    , NS "python"   spawnPython  findPython  managePython
-    , NS "ghci"     spawnGhci    findGhci    manageGhci
     -- , NS "plover"   spawnPlover  findPlover  managePlover
-    , anki
+    , anki, ipython, ghci, pycalc
     ]
 
 anki =
@@ -153,10 +173,32 @@ managePlover = customFloating $ W.RationalRect x y w h
     y = (1 - h) + border
     x = 0.006
 
-spawnPython  = myTerminal ++ " --class python --override 'background = #321b32' -e ipython"
+
+-- spawnPython  = myTerminal ++ " --class python --override 'background = #321b32' -e ipython"
+spawnPython  = runCommand "ipython" . withNix (pyEnv "37" []) $ asClass "python" myTerminal
 findPython   = className =? "python"
 managePython = floatRepl
 
-spawnGhci  = myTerminal ++ " --class ghci --override 'background = #231b32' --override 'cursor = #ffb86c' -e ghci"
-findGhci   = className =? "ghci"
-manageGhci = floatRepl
+-- spawnGhci  = myTerminal ++ " --class ghci --override 'background = #231b32' --override 'cursor = #ffb86c' -e ghci"
+-- spawnGhci  = runCommand "ghci" . withNix "ghc" $ asClass "ghci" myTerminal
+-- findGhci   = className =? "ghci"
+-- manageGhci = floatRepl
+
+mkScratchpad name cmd nix manager =
+  let _class = name ++ "_scratchpad"
+  in
+    NS
+      name
+      (runCommand cmd . withNix nix $ asClass _class myTerminal)
+      (className =? _class)
+      manager
+
+simplePad name nix manager = mkScratchpad name name nix manager
+
+ipython = simplePad "ipython" (pyEnv "37" ["numpy"]) floatRepl
+ghci    = simplePad "ghci" "ghc" floatRepl
+pycalc  = mkScratchpad "calc" "nvim ~/tmp/_calc.py" (pyEnv "37" ["numpy"]) manageNotes
+-- spawnCalc = (runCommand "nvim ~/tmp/_calc.py" .
+              -- withNix (pyEnv "37" ["numpy"]) $
+              -- asClass "calc_vim" myTerminal)
+-- findCalc = className =? "calc_vim"
