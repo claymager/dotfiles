@@ -23,93 +23,116 @@ notify msg = flashText textConfig 0.1 msg
 -- Key bindings
 --
 -- mod1Mask => left alt
--- mod3Mask => right alt
+-- mod3Mask => f24
 -- mod4Mask => super
 --
 myModMask = mod4Mask
 
-myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
+myKeys conf@(XConfig {XMonad.modMask = modMask}) =
+  let
+    withMask m = \k -> (m, k)
+    hyperMask  = controlMask .|. shiftMask .|. altMask
+    mehMask    = hyperMask .|. mod4Mask
+    altMask    = mod1Mask
+    noMask     = withMask 0
+    super      = withMask modMask
+    withShift  = withMask $ modMask .|. shiftMask
+    withCtl    = withMask $ modMask .|. controlMask
+    scratchpad = withLAlt
+    withLAlt   = withMask $ modMask .|. mod1Mask
+    hyper      = withMask $ hyperMask
+    alt        = withLAlt
+    notifyMask = withMask $ modMask .|. shiftMask .|. controlMask .|. mod3Mask
+  in M.fromList $
+
   -- Launchers
-  [ ((modMask, xK_t),                 spawn $ XMonad.terminal conf)
-  , ((modMask .|. mod1Mask, xK_t),    spawn "xterm")
-  , ((modMask, xK_c),                 runScratchpad "gcal")
-  , ((modMask .|. mod1Mask, xK_m),    runScratchpad "gmail")
-  , ((modMask, xK_f),                 spawn "qutebrowser")
-  , ((modMask, xK_s),                 runScratchpad "terminal")
-  , ((modMask, xK_d),                 runScratchpad "discord")
-  , ((modMask .|. controlMask, xK_p), runScratchpad "python")
-  , ((modMask .|. controlMask, xK_h), runScratchpad "ghci")
-  , ((modMask .|. controlMask, xK_s), runScratchpad "plover")
-  , ((modMask, xK_z),                 runScratchpad "spotify")
-  , ((modMask, xK_a),                 runScratchpad "notes")
-  , ((modMask .|. mod1Mask, xK_n),    spawn "google-chrome-stable --kiosk --new-window netflix.com")
-  , ((modMask .|. mod1Mask, xK_c),    spawn "google-chrome-stable --new-window creddle.io")
+  [ (super xK_t,                 spawn $ XMonad.terminal conf)
+  , (withShift xK_t,             spawn "kitty -d=$focusdir")
+  , (alt xK_f,                   catchIO $ setEnv "focusdir" "/home/john/lab/haskell/proj/")
+  , (alt xK_t,                   spawn "env > /home/john/tmp/env.txt")
+  , (super xK_f,                 spawn "qutebrowser -l warning")
+  , (scratchpad xK_c,            runScratchpad "gcal")
+  , (scratchpad xK_m,            runScratchpad "gmail")
+  , (scratchpad xK_s,            runScratchpad "terminal")
+  , (scratchpad xK_d,            runScratchpad "discord")
+  , (scratchpad xK_p,            runScratchpad "ipython")
+  , (scratchpad xK_h,            runScratchpad "ghci")
+  -- , (scratchpad xK_s,            runScratchpad "plover")
+  , (scratchpad xK_z,            runScratchpad "spotify")
+  -- , (scratchpad xK_a,            runScratchpad "notes")
+  , (scratchpad xK_a,            runScratchpad "anki")
+  , (withCtl xK_n,               spawn "google-chrome-stable --kiosk --new-window netflix.com")
+  , (withMask mod3Mask xK_g,     spawn "pavucontrol")
+  , (scratchpad xK_l,            runScratchpad "calc")
+  -- , (withLAlt xK_c,              spawn "google-chrome-stable --new-window creddle.io")
 
   -- Password-store interface
- , ((modMask, xK_p),                  passPrompt xpconfig)
-  , ((modMask .|. shiftMask, xK_p),   passGeneratePrompt xpconfig)
+  , (super xK_p,                 passPrompt xpconfig)
+  , (withShift xK_p,             passGeneratePrompt xpconfig)
   , ((modMask .|. shiftMask .|. controlMask, xK_apostrophe),   clipSavePrompt xpconfig)
-  , ((modMask .|. shiftMask, xK_apostrophe),   clipPrompt xpconfig)
+  , (super xK_eth,          clipPrompt xpconfig)
 
   -- Screenshots
-  , ((modMask,               xK_x),   spawn "scrot -ue 'mv $f ~/pictures/screenshots/'")
-  , ((modMask .|. shiftMask, xK_x),   spawn "scrot -e 'mv $f ~/pictures/screenshots/'")
+  , (super xK_x,                 spawn "scrot -ue 'mv $f ~/pictures/screenshots/'")
+  , (withShift xK_x,             spawn "scrot -e 'mv $f ~/pictures/screenshots/'")
 
   -- Audio
-  , ((modMask, xF86XK_AudioMute),     spawn "pavucontrol")
-  , ((0, xF86XK_AudioMute),           spawn "amixer -q set Master toggle")
-  , ((0, xF86XK_AudioLowerVolume),    spawn "amixer -q set Master 8%-")
-  , ((0, xF86XK_AudioRaiseVolume),    spawn "amixer -q set Master 8%+")
-  , ((0, 0x1008FF16),                 spawn "playerctl previous")
-  , ((0, 0x1008FF14),                 spawn "playerctl play-pause")
-  , ((0, 0x1008FF17),                 spawn "playerctl next")
+  , (super xF86XK_AudioMute,           spawn "pavucontrol")
+  , (noMask xF86XK_AudioMute,          spawn "amixer -q set Master toggle")
+  , (noMask xF86XK_AudioLowerVolume,   spawn "amixer -q set Master 8%-")
+  , (noMask xF86XK_AudioRaiseVolume,   spawn "amixer -q set Master 8%+")
+  , (noMask xF86XK_AudioPrev,          spawn "playerctl previous")
+  , (noMask xF86XK_AudioPlay,          spawn "playerctl play-pause")
+  , (noMask xF86XK_AudioNext,          spawn "playerctl next")
 
-  -- Backlight
-  , ((0, xF86XK_MonBrightnessUp),         spawn "light -A 12")
-  , ((0, xF86XK_MonBrightnessDown),       spawn "light -U 12")
-  , ((modMask, xF86XK_MonBrightnessDown), spawn "light 1")
+  -- -- Backlight
+  -- , (noMask xF86XK_MonBrightnessUp,    spawn "light -A 12")
+  -- , (noMask xF86XK_MonBrightnessDown,  spawn "light -U 12")
+  -- , (super xF86XK_MonBrightnessDown,   spawn "light 1")
 
-  -- Notifications
-  , ((modMask .|. shiftMask .|. controlMask, xK_q), notify "colemak")
-  , ((modMask .|. shiftMask .|. controlMask, xK_s), notify "steno")
-  , ((modMask .|. shiftMask .|. controlMask, xK_v), notify "neovim")
+  -- -- Notifications
+  -- , (notifyMask xK_q,                  notify "colemak")
+  -- , (notifyMask xK_s,                  notify "steno")
+  -- , (notifyMask xK_v,                  notify "neovim")
 
+  , (super xK_F2,                      spawn "kitty nvim $HOME/github/config/xmonad/xmonad.hs")
 
   --------------------------------------------------------------------
   -- "Standard" xmonad key bindings
   --
   -- Layout management
-  , ((modMask, xK_l),                 sendMessage NextLayout)
-  , ((modMask, xK_comma),             sendMessage (IncMasterN 1))
-  , ((modMask, xK_period),            sendMessage (IncMasterN (-1)))
-  , ((modMask, xK_o),                 sendMessage Shrink)
-  , ((modMask, xK_i),                 sendMessage Expand)
+  , (super xK_l,                 sendMessage NextLayout)
+  , (super xK_comma,             sendMessage (IncMasterN 1))
+  , (super xK_period,            sendMessage (IncMasterN (-1)))
+  , (super xK_o,                 sendMessage Shrink)
+  , (super xK_i,                 sendMessage Expand)
 
   -- Spacing
-  , ((modMask, xK_k),                 incScreenSpacing 5 >> incWindowSpacing 5)
-  , ((modMask, xK_j),                 decScreenSpacing 5 >> decWindowSpacing 5)
-  , ((modMask .|. shiftMask, xK_g),   withFocused toggleBorder)
-  , ((modMask, xK_g),                 toggleWindowSpacingEnabled >>
+  , (super xK_k,                 incScreenSpacing 5 >> incWindowSpacing 5)
+  , (super xK_j,                 decScreenSpacing 5 >> decWindowSpacing 5)
+  , (withShift xK_g,             withFocused toggleBorder)
+  , (super xK_g,                 toggleWindowSpacingEnabled >>
                                       toggleScreenSpacingEnabled)
 
   -- Resize viewed windows to the correct size.
   -- , ((modMask, xK_r),                 refresh)
-  , ((modMask, xK_Escape),            setLayout $ XMonad.layoutHook conf)
+  , (super xK_Escape,            setLayout $ XMonad.layoutHook conf)
 
   -- Window management
   , ((modMask .|. controlMask, xK_c), kill)
-  , ((modMask, xK_h),                 windows W.focusMaster  )
-  , ((modMask, xK_n),                 windows W.focusDown)
-  , ((modMask, xK_e),                 windows W.focusUp  )
-  , ((modMask .|. shiftMask, xK_h),   windows W.swapMaster)
-  , ((modMask .|. shiftMask, xK_n),   windows W.swapDown)
-  , ((modMask .|. shiftMask, xK_e),   windows W.swapUp)
-  , ((modMask, xK_m),                 withFocused $ windows . W.sink)
+  , (super xK_h,                 windows W.focusMaster  )
+  , (super xK_n,                 windows W.focusDown)
+  , (super xK_e,                 windows W.focusUp  )
+  , (withShift xK_h,             windows W.swapMaster)
+  , (withShift xK_n,             windows W.swapDown)
+  , (withShift xK_e,             windows W.swapUp)
+  , (super xK_m,                 withFocused $ windows . W.sink)
 
   -- Quit xmonad.
-  , ((modMask, xK_q),                                restart "xmonad" True)
-  , ((modMask .|. shiftMask, xK_q),                  io exitSuccess)
-  -- , ((modMask .|. shiftMask .|. controlMask, xK_q),  spawn "systemctl hibernate")
+  , (super     xK_q,             restart "xmonad" True)
+  , (withShift xK_q,             io exitSuccess)
+  , (withCtl   xK_q,             spawn "systemctl hibernate")
+  , (withCtl   xK_t,             spawn "nixos-rebuild test")
   ] ++
 
   -- mod-[1..9], Switch to workspace N
