@@ -151,7 +151,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
   , (super     xK_q,             restart "xmonad" True)
   , (withShift xK_q,             io exitSuccess)
   , (withCtl   xK_q,             spawn "systemctl hibernate")
-  , (withLAlt   xK_t,             spawn "kitty --class small_float sudo nixos-rebuild test")
+  , (withLAlt   xK_t,            runInTerm "nixos-rebuild test")
   ] ++
 
   -- mod-[1..9], Switch to workspace N
@@ -167,6 +167,21 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
     | (key, sc) <- zip [xK_y, xK_u, xK_semicolon] [0..]
     , (f, m)    <- [(W.view, 0), (W.shift, shiftMask)]
   ]
+  where
+    runInTerm = spawn . ("kitty --class small_float fish -c " ++) . wrapCommand
 
+    interpolate :: String -> [String] -> String
+    interpolate i [] = ""
+    interpolate i (x:xs) = x ++ foldl (\a b -> a ++ i ++ b) "" xs
 
+    wrapCommand cmd = " \"" ++ interpolate " && " commands ++ "\""
+      where
+        commands =
+          [ "echo -e '" ++ bold cmd ++ ":'"
+          , cmd
+          , "echo -n \\ndone"
+          , "sleep 3"
+          ]
+
+    bold s = "\\\\033[1m" ++ s ++ "\\\\033[0m"
 
