@@ -51,7 +51,10 @@ myMouseBindings XConfig{ XMonad.modMask = modMask } =
 ------------------------------------------------------------------------
 -- Hooks
 --
-myInitCommands = [ "pkill conky; conky -q" ]
+myInitCommands = [ 
+    "pkill conky; conky -q",
+    "xmodmap ~/.Xmodmap"
+  ]
 
 myStartupHook = do
     mapM_ spawn myInitCommands

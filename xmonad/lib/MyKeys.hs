@@ -47,6 +47,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
     scratchpad = withLAlt
     withLAlt   = withMask $ modMask .|. mod1Mask
     hyper      = withMask $ hyperMask
+    rightBoard     = withMask $ mod3Mask
+    leftBoard      = withMask $ mod2Mask
     alt        = withLAlt
     notifyMask = withMask $ modMask .|. shiftMask .|. controlMask .|. mod3Mask
 
@@ -98,18 +100,20 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
   , (noMask xF86XK_AudioPlay,          spawn "playerctl play-pause")
   , (noMask xF86XK_AudioNext,          spawn "playerctl next")
 
-  -- -- Backlight
-  -- , (noMask xF86XK_MonBrightnessUp,    spawn "light -A 12")
-  -- , (noMask xF86XK_MonBrightnessDown,  spawn "light -U 12")
-  -- , (super xF86XK_MonBrightnessDown,   spawn "light 1")
-
-  -- -- Notifications
-  -- , (notifyMask xK_q,                  notify "colemak")
-  -- , (notifyMask xK_s,                  notify "steno")
-  -- , (notifyMask xK_v,                  notify "neovim")
-
   , (super xK_F2,                 spawn "kitty nvim $HOME/github/config/xmonad/xmonad.hs")
   , (withLAlt xK_F2,              spawn "kitty nvim /etc/nixos/")
+
+  -- Cockpit
+  , (rightBoard xK_F2,                 spawn "kitty nvim /home/john/github/config/xmonad/lib/MyKeys.hs")
+  , (rightBoard xK_F3,                 spawn "kitty nvim /home/john/lab/macroOrnata/wrap.py")
+  , (rightBoard xK_Pause,        spawn "xset dpms force off")
+  , (rightBoard xK_BackSpace,        dismiss)
+
+  , (leftBoard xK_Escape,   io exitSuccess)
+  , (leftBoard xK_d,        runScratchpad "discord")
+  , (leftBoard xK_s,        spawn "steam > /dev/null 2> /dev/null")
+  , (leftBoard xK_e,        spawn "amixer -q set Capture 68%")
+  , (leftBoard xK_c,        spawn "amixer -q set Capture 0%")
 
   --------------------------------------------------------------------
   -- "Standard" xmonad key bindings
