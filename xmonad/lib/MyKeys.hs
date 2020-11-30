@@ -79,6 +79,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
   , (withCtl xK_n,               spawn "google-chrome-stable --kiosk --new-window netflix.com")
   , (withMask mod3Mask xK_g,     spawn "pavucontrol")
   , (super xK_s,     submap . M.fromList $ scratchpads)
+  , (withShift xK_l,             spawn "kitty -o font_size=40 --class ws-label cat")
   -- , (withLAlt xK_c,              spawn "google-chrome-stable --new-window creddle.io")
 
   -- Password-store interface
