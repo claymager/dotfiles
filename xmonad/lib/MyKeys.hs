@@ -106,16 +106,23 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
   , (withLAlt xK_F2,              spawn "kitty nvim /etc/nixos/")
 
   -- Cockpit
-  , (rightBoard xK_F2,                 spawn "kitty nvim /home/john/github/config/xmonad/lib/MyKeys.hs")
-  , (rightBoard xK_F3,                 spawn "kitty nvim /home/john/lab/macroOrnata/wrap.py")
-  , (rightBoard xK_Pause,        spawn "xset dpms force off")
-  , (rightBoard xK_BackSpace,        dismiss)
+  , (rightBoard xK_F1,          spawn "kitty nvim /home/john/github/config/xmonad/lib/MyKeys.hs")
+  , (rightBoard xK_F3,          spawn "kitty nvim /home/john/lab/macroOrnata/wrap.py")
+  , (rightBoard xK_Pause,       spawn "xset dpms force off")
+  , (rightBoard xK_F9,          setBrightness 1)
+  , (rightBoard xK_F10,         setBrightness 20)
+  , (rightBoard xK_F11,         setBrightness 60)
+  , (rightBoard xK_F12,         setBrightness 100)
+  , (rightBoard xK_BackSpace,   dismiss)
 
   , (leftBoard xK_Escape,   io exitSuccess)
+  , (leftBoard xK_comma,    spawn "bluetoothctl -- connect 70:26:05:b6:11:3d")
+  , (leftBoard xK_period,   spawn "bluetoothctl -- disconnect 70:26:05:b6:11:3d")
   , (leftBoard xK_d,        runScratchpad "discord")
-  , (leftBoard xK_s,        spawn "steam > /dev/null 2> /dev/null")
-  , (leftBoard xK_e,        spawn "amixer -q set Capture 68%")
+  , (leftBoard xK_e,        spawn "amixer -q set Capture 100%")
   , (leftBoard xK_c,        spawn "amixer -q set Capture 0%")
+  , (leftBoard xK_s,        spawn "steam > /dev/null 2> /dev/null")
+
 
   --------------------------------------------------------------------
   -- "Standard" xmonad key bindings
@@ -170,6 +177,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
     , (f, m)    <- [(W.view, 0), (W.shift, shiftMask)]
   ]
   where
+    setBrightness x = spawn $ "sudo ddcutil --bus 6 setvcp 10 " ++ show x
     runInTerm = spawn . ("kitty --class small_float fish -c " ++) . wrapCommand
 
     interpolate :: String -> [String] -> String
