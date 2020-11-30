@@ -13,6 +13,8 @@ import           XMonad.Layout.Gaps
 import           XMonad.Layout.Spacing
 import           XMonad.Layout.Spiral
 import           XMonad.Layout.ThreeColumns
+import           XMonad.Layout.SubLayouts
+import           XMonad.Layout.Tabbed
 import           XMonad.Util.NamedScratchpad
 import qualified Data.Map                      as M
 import qualified XMonad.StackSet               as W
@@ -27,7 +29,7 @@ import           MyWindowHooks
 --
 myBorderWidth = 3
 myLayout =
-    spacingRaw False (Border 10 10 10 440) True (Border 10 10 10 10) True
+    subTabbed  . spacingRaw False (Border 10 10 10 440) True (Border 10 10 10 10) True
         $   Mirror (Tall 4 (3 / 100) (2 / 3))
         ||| ThreeColMid 1 (3 / 100) (5 / 12)
         ||| spiral (6 / 7)

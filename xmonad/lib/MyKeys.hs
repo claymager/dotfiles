@@ -9,7 +9,7 @@ import XMonad.Actions.DeManage
 import XMonad.Actions.ShowText
 import XMonad.Actions.Submap
 import XMonad.Layout.Spacing
-import XMonad.Prompt
+import XMonad.Layout.SubLayouts
 import XMonad.Util.NamedScratchpad
 import qualified Data.Map        as M
 import qualified XMonad.StackSet as W
@@ -78,7 +78,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
   , (super xK_f,                 spawn "qutebrowser 2> /dev/null")
   , (withCtl xK_n,               spawn "google-chrome-stable --kiosk --new-window netflix.com")
   , (withMask mod3Mask xK_g,     spawn "pavucontrol")
-  , (super xK_space,     submap . M.fromList $ scratchpads)
+  , (super xK_s,     submap . M.fromList $ scratchpads)
   -- , (withLAlt xK_c,              spawn "google-chrome-stable --new-window creddle.io")
 
   -- Password-store interface
@@ -153,6 +153,11 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
   , (withShift xK_n,             windows W.swapDown)
   , (withShift xK_e,             windows W.swapUp)
   , (super xK_m,                 withFocused $ windows . W.sink)
+  , (withCtl xK_n,               withFocused $ sendMessage . mergeDir W.focusDown')
+  , (withCtl xK_e,               withFocused $ sendMessage . mergeDir W.focusUp')
+  , (withMask (modMask .|. controlMask .|. shiftMask) xK_n, withFocused $ sendMessage . UnMerge)
+  , (withMask (modMask .|. controlMask .|. shiftMask) xK_e, withFocused $ sendMessage . UnMerge)
+  , (withCtl xK_u,               withFocused $ sendMessage . UnMergeAll)
 
   -- Quit xmonad.
   , (super     xK_q,             restart "xmonad" True)
