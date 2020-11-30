@@ -39,16 +39,22 @@ dismiss = withWindowSet $ \s -> do
 
 myManageHook = composeOne
     [ className =? "Gimp"     -?> doFloat
-    , className =? "Anki" <&&> title =? "Add" -?> doFloat
     -- , className =? "Anki" <&&> title =? "Anki" -?> doFloatAt 0 0
     , className =? "Xmessage" -?> floatCenter
     , className =? "small_float" -?> smallFloat
     , className =? "VirtualBox Machine" -?> doIgnore
+    , className =? "ws-label" -?> floatLabel
+    , className =? "Matplotlib" -?> doFloat
     , isDialog                -?> doFloat
     , return True             -?> doF W.swapDown
     ] <+> namedScratchpadManageHook scratchpads
 
 runScratchpad = namedScratchpadAction scratchpads
+
+floatLabel = customFloating $ W.RationalRect x y w h
+  where
+    (x, y) = (0.006, 0.014)
+    (w, h) = (0.118, 0.10)
 
 type Command = String -> String
 
@@ -68,8 +74,6 @@ runCommand cmd base = base ++ "\"" ++ cmd ++ "\""
 editFile :: String -> Command
 editFile path = runCommand ("nvim " ++ path)
 
-
-
 myHandleEventHook = composeAll
     [ dynamicPropertyChange "WM_CLASS" (findDiscord --> floatDiscord)
     , dynamicPropertyChange "WM_NAME"  (findGcal    --> floatGcal)
@@ -84,6 +88,8 @@ scratchpads =
     , NS "notes"    spawnNotes   findNotes   manageNotes
     , NS "spotify"  spawnSpotify findSpotify doFloat
     , NS "terminal" spawnTerm    findTerm    manageTerm
+    , NS "ankiAdd" "" (className =? "Anki" <&&> title =? "Add") doFloat
+
     -- , NS "plover"   spawnPlover  findPlover  managePlover
     , anki, ipython, ghci, pycalc
     ]
@@ -121,9 +127,9 @@ floatCenter = customFloating $ W.RationalRect x y w h
 smallFloat = customFloating $ W.RationalRect x y w h
  where
    h = 0.2
-   w = 0.3
+   w = 0.15
    y = 0.7
-   x = 0.1
+   x = 0.05
 
 
 floatRepl = customFloating $ W.RationalRect x y w h
@@ -138,7 +144,7 @@ spawnSpotify = "spotify"
 findSpotify = className =? "Spotify"
 floatSpotify = floatCenter
 
-spawnDiscord = "Discord"
+spawnDiscord = "Discord &> /dev/null"
 findDiscord = className =? "discord"
 floatDiscord = customFloating $ W.RationalRect x y w h
   where
@@ -159,9 +165,9 @@ spawnNotes  = myTerminal ++ " --name notes -e nvim ~/.messages"
 findNotes   = resource =? "notes"
 manageNotes = customFloating $ W.RationalRect x y w h
   where
-    h = full
+    h = 0.8
     w = 0.2
-    y = -border
+    y = 0.1
     x = -border
 
 spawnTerm  = myTerminal ++ " --name scratchpad"
@@ -206,7 +212,7 @@ simplePad name nix manager = mkScratchpad name name nix manager
 
 ipython = simplePad "ipython" (pyEnv "37" ["numpy"]) floatRepl
 ghci    = simplePad "ghci" "ghc" floatRepl
-pycalc  = mkScratchpad "calc" "nvim ~/tmp/_calc.py" (pyEnv "37" ["numpy"]) manageNotes
+pycalc  = mkScratchpad "calc" "nvim ~/tmp/_calc.py" (pyEnv "37" ["numpy", "matplotlib"]) manageNotes
 -- spawnCalc = (runCommand "nvim ~/tmp/_calc.py" .
               -- withNix (pyEnv "37" ["numpy"]) $
               -- asClass "calc_vim" myTerminal)

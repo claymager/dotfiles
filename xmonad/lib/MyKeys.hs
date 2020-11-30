@@ -59,9 +59,11 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
         scratchMap key name = ((0, key), runScratchpad name)
       in
         [ scratchMap xK_c "gcal"
+        , scratchMap xK_d "discord"
         , scratchMap xK_m "gmail"
         , scratchMap xK_z "spotify"
         , scratchMap xK_a "anki"
+        , scratchMap xK_r "ankiAdd"
         , scratchMap xK_l "calc"
         , scratchMap xK_p "ipython"
         , scratchMap xK_h "ghci"
