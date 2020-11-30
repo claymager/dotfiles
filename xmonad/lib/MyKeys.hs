@@ -180,7 +180,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
       where
         commands =
           [ "echo -e '" ++ bold cmd ++ ":'"
-          , cmd
+          , cmd ++ " || echo -n \\nERROR"
           , "echo -n \\ndone"
           , "sleep 3"
           ]
