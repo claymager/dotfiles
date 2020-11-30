@@ -74,9 +74,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) =
 
   -- Launchers
   [ (super xK_t,                 spawn $ XMonad.terminal conf)
-  -- , (withShift xK_t,             spawn "kitty -d=$focusdir")
-  -- , (alt xK_f,                   catchIO $ setEnv "focusdir" "/home/john/lab/haskell/proj/")
-  -- , (alt xK_t,                   spawn "env > /home/john/tmp/env.txt")
+  , (withLAlt xK_t,              spawn "xterm")
   , (super xK_f,                 spawn "qutebrowser 2> /dev/null")
   , (withCtl xK_n,               spawn "google-chrome-stable --kiosk --new-window netflix.com")
   , (withMask mod3Mask xK_g,     spawn "pavucontrol")
