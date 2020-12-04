@@ -41,11 +41,21 @@ def pre_process(task: str) -> str:
     return task.replace("$", " $")
 
 
+def hide_pri(task: str) -> str:
+    "given a task with a Priority, remove that marker"
+    words = task.split()
+    return " ".join([words[0]] + words[2:])
+
+
+def post_process(task: str) -> str:
+    return hide_pri(remove_tags(task)).strip()
+
+
 def main(args=None):
     tasks = map(pre_process, sys.stdin)
     tasks = filter(partial(threshold_not_after, datetime.now()), tasks)
     tasks = filter(has_pri, tasks)
-    [print(remove_tags(t).strip()) for t in tasks]
+    [print(post_process(t)) for t in tasks]
     return True
 
 
