@@ -31,10 +31,21 @@ def has_pri(task: str) -> bool:
     return bool(pattern.match(maybe_pri))
 
 
+def remove_tags(task: str) -> str:
+    words = task.split()
+    return " ".join(w for w in words if ":" not in w)
+
+
+def pre_process(task: str) -> str:
+    # allow str.split to logically handle env variables
+    return task.replace("$", " $")
+
+
 def main(args=None):
-    tasks = filter(partial(threshold_not_after, datetime.now()), sys.stdin)
+    tasks = map(pre_process, sys.stdin)
+    tasks = filter(partial(threshold_not_after, datetime.now()), tasks)
     tasks = filter(has_pri, tasks)
-    [print(t.strip()) for t in tasks]
+    [print(remove_tags(t).strip()) for t in tasks]
     return True
 
 
