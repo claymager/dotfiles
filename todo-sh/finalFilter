@@ -11,20 +11,23 @@ this is intended to be used as TODOTXT_FINAL_FILTER
 import re
 import sys
 from datetime import datetime
+from functools import partial
 
-pattern = re.compile(r"t:(\d{4})-(\d{2})-(\d{2})")
+
+def threshold_not_after(date: datetime, task: str) -> bool:
+    """ Only allow tasks who don't have a future threshold """
+    pattern = re.compile(r"t:(\d{4})-(\d{2})-(\d{2})")
+    match = pattern.search(task)
+    if match:
+        threshold = [int(i) for i in match.groups()]
+        if datetime(*threshold) > date:
+            return False
+    return True
 
 
 def main(args=None):
-    now = datetime.now()
-    for line in sys.stdin:
-        match = pattern.search(line)
-        if match:
-            threshold = [int(i) for i in match.groups()]
-            if datetime(*threshold) < now:
-                print(line.strip())
-        else:
-            print(line.strip())
+    tasks = filter(partial(threshold_not_after, datetime.now()), sys.stdin)
+    [print(t.strip()) for t in tasks]
     return True
 
 
