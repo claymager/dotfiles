@@ -25,8 +25,15 @@ def threshold_not_after(date: datetime, task: str) -> bool:
     return True
 
 
+def has_pri(task: str) -> bool:
+    maybe_pri = task.split()[1]
+    pattern = re.compile(r'\([A-Z]\)')
+    return bool(pattern.match(maybe_pri))
+
+
 def main(args=None):
     tasks = filter(partial(threshold_not_after, datetime.now()), sys.stdin)
+    tasks = filter(has_pri, tasks)
     [print(t.strip()) for t in tasks]
     return True
 
